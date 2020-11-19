@@ -1,0 +1,4 @@
+float64[] weights
+float64[] biases
+---
+bool success
