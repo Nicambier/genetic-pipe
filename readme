@@ -1,0 +1,28 @@
+Genetic evolution of a dynamic neural network for pipebots.
+
+List and use of packages:
+    pipebot_description: contains robot models
+    pipebot_control: robot controller (incl. DNN) and launch file thereof + robot spawner
+    pipebot_gazebo: world model and launch file for simple simulation (including controller and robot spawner)
+    pipebot_genetic: meta-algorithm (GA) + global launch file
+    pipebot_services: config msgs required to interface GA with controller
+
+Build:
+    Requires ros-foxy and gazebo >= 11
+    in main folder:
+    colcon build
+
+Launch:
+    For basic simulation:
+        ros2 launch pipebot_gazebo pipebot.launch.py 
+        (controller is launched too but robot won't move as neural weights are null by default)
+
+    For genetic algorithm:
+        ros2 launch pipebot_genetic pipebot_GA.launch.py 
+        args:
+            gui:=true/false [false]: set to true to see the runs
+            run_save:=true/false [false]: set to true to load a previously obtained setting instead of running the optimisation (previous optimisation must have run until completion)
+            
+        Other parameters (generations, population size, save file) are set in pipebot_genetic/pipebot_genetic/GA_client.py
+            
+

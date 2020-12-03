@@ -3,7 +3,7 @@
   <world name="default">
       
     <physics type="ode">
-      <max_step_size>0.01</max_step_size>
+      <!--max_step_size>0.01</max_step_size-->
       <real_time_update_rate>0</real_time_update_rate>
     </physics>
     
@@ -13,6 +13,11 @@
     <include>
       <uri>model://sun</uri>
     </include>
+    
+    <!--include>
+      <pose>0 0 0.1 0 0 0</pose>
+      <uri>model://sprintbot_basic_collisions</uri>
+    </include>-->
     
     <model name="maze">
       <pose>0 0 0  0 0 0</pose>

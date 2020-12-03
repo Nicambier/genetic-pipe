@@ -12,7 +12,7 @@ from launch_ros.actions import PushRosNamespace
 
 def generate_launch_description():
     gazebo_path = get_package_share_directory('gazebo_ros')
-    urdf = get_package_share_directory('pipebot_description')+'/urdf/pipebot.urdf'
+    urdf = get_package_share_directory('pipebot_description')+'/urdf/sprintbot.urdf'
     
     params = {'robot_description': open(urdf).read()}
     
@@ -33,7 +33,7 @@ def generate_launch_description():
         parameters=[params]
     )
     
-    robot_spawner = Node(package='gazebo_ros', executable='spawn_entity.py', arguments=['-topic', 'robot_description', '-entity', LaunchConfiguration('rb_id'), '-robot_namespace', LaunchConfiguration('rb_id')], output='screen')
+    robot_spawner = Node(package='gazebo_ros', executable='spawn_entity.py', arguments=['-topic', 'robot_description', '-entity', LaunchConfiguration('rb_id'), '-robot_namespace', LaunchConfiguration('rb_id'), '-z','0.05'], output='screen')
         
     return LaunchDescription([
         DeclareLaunchArgument(

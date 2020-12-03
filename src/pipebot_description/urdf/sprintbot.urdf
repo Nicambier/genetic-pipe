@@ -1,0 +1,240 @@
+<?xml version="1.0" ?>
+<robot name="sprintbot_basic_collisions">
+    
+  <gazebo>
+    <plugin name='diff_drive' filename='libgazebo_ros_diff_drive.so'>
+      <ros>
+        <namespace>/bot1</namespace>
+        <!--remapping>cmd_vel:=cmd_demo</remapping-->
+        <remapping>odom:=odom_demo</remapping>
+      </ros>
+      <left_joint>left_motor</left_joint>
+      <right_joint>right_motor</right_joint>
+      <wheel_separation>0.08</wheel_separation>
+      <wheel_diameter>0.2</wheel_diameter>
+      <max_wheel_torque>2.61</max_wheel_torque>
+      <max_wheel_acceleration>0.5</max_wheel_acceleration>
+      <publish_odom>1</publish_odom>
+      <publish_odom_tf>1</publish_odom_tf>
+      <publish_wheel_tf>1</publish_wheel_tf>
+      <odometry_frame>odom_demo</odometry_frame>
+      <robot_base_frame>link_0</robot_base_frame>
+    </plugin>
+    
+    <plugin filename="libgazebo_ros_p3d.so " name="p3d">
+        <ros>
+            <namespace>/bot1</namespace>
+        </ros>
+        <body_name>link_0</body_name>
+    </plugin>  
+  </gazebo>
+    
+  <link name="link_0">
+    <inertial>
+      <mass value="1.5"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </inertial>
+    <origin rpy="0 0 0 0" xyz="0 0 0"/>
+    <kinematic>0</kinematic>
+    <enable_wind>0</enable_wind>
+    <visual>
+      <origin rpy="0 0 -1.5708" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="./install/pipebot_description/share/pipebot_description/meshes/sprintbot_body_corrected_axis.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 -1.5708" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.0915"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <link name="link_1">
+    <inertial>
+      <mass value="0.35"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </inertial>
+    <origin rpy="0 0 0" xyz="0 0.04 0"/>
+    <kinematic>0</kinematic>
+    <enable_wind>0</enable_wind>
+    <visual>
+      <origin rpy="1.5708 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.015" radius="0.1"/>
+      </geometry>
+      <transparency>0</transparency>
+      <cast_shadows>1</cast_shadows>
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.015" radius="0.1"/>
+      </geometry>
+    </collision>    
+  </link>
+  
+  <link name="link_2">
+    <inertial>
+      <mass value="0.35"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </inertial>
+    <origin rpy="0 0 0" xyz="0 -0.04 0"/>
+    <kinematic>0</kinematic>
+    <enable_wind>0</enable_wind>
+    <visual>
+      <origin rpy="1.5708 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.015" radius="0.1"/>
+      </geometry>
+      <transparency>0</transparency>
+      <cast_shadows>1</cast_shadows>
+    </visual>
+    <collision>
+      <origin rpy="1.5708 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.015" radius="0.1"/>
+      </geometry>
+    </collision> 
+  </link>
+  
+  <link name="front_caster">
+    <inertial>
+      <mass value="0.005"/>
+      <inertia ixx="1.15e-06" ixy="0" ixz="0" iyy="1.15e-06" iyz="0" izz="1.15e-06"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </inertial>
+    <origin rpy="0 0 0" xyz="0.12 0 -0.1"/>
+    <kinematic>0</kinematic>
+    <enable_wind>0</enable_wind>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+      <transparency>0</transparency>
+      <cast_shadows>1</cast_shadows>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+    </collision> 
+  </link>
+  
+  <link name="back_caster">
+    <inertial>
+      <mass value="0.005"/>
+      <inertia ixx="1.15e-06" ixy="0" ixz="0" iyy="1.15e-06" iyz="0" izz="1.15e-06"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </inertial>
+    <origin rpy="0 0 0" xyz="-0.12 0 -0.1"/>
+    <kinematic>0</kinematic>
+    <enable_wind>0</enable_wind>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+      <transparency>0</transparency>
+      <cast_shadows>1</cast_shadows>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+    </collision> 
+  </link>
+  
+  <joint name="left_motor" type="revolute">
+    <parent link="link_0"/>
+    <child link="link_1"/>
+    <origin rpy="0 0 0" xyz="0 0.04 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="2.62" lower="-1.79769e+308" upper="1.79769e+308" velocity="0.5"/>
+    <dynamics damping="0" friction="0" spring_reference="0" spring_stiffness="0"/>
+  </joint>
+  
+  <joint name="right_motor" type="revolute">
+    <parent link="link_0"/>
+    <child link="link_2"/>
+    <origin rpy="0 0 0" xyz="0 -0.04 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="2.62" lower="-1.79769e+308" upper="1.79769e+308" velocity="0.5"/>
+    <dynamics damping="0" friction="0" spring_reference="0" spring_stiffness="0"/>
+  </joint>
+  
+  <joint name="back_spring" type="prismatic">
+    <parent link="link_0"/>
+    <child link="back_caster"/>
+    <origin rpy="0 0 0" xyz="-0.12 0 -0.1"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="0" lower="-0.01" upper="0.02" velocity="0"/>
+    <dynamics damping="0.5" friction="1.0"/>
+    <safety_controller k_position="30" k_velocity="30" soft_lower_limit="0.0" soft_upper_limit="0.01"/>
+  </joint>
+  
+  <joint name="front_spring" type="prismatic">
+    <parent link="link_0"/>
+    <child link="front_caster"/>
+    <origin rpy="0 0 0" xyz="0.12 0 -0.1"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="0" lower="-0.01" upper="0.02" velocity="0"/>
+    <dynamics damping="0.5" friction="2.0"/>
+    <safety_controller k_position="30" k_velocity="30" soft_lower_limit="0.0" soft_upper_limit="0.01"/>
+  </joint>
+  
+  <link name="sensor_link">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <inertial>
+      <mass value="0.005"/>
+      <inertia ixx="0.166667" ixy="0" ixz="0" iyy="0.166667" iyz="0" izz="0.166667"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </inertial>
+  </link>
+  
+  <gazebo reference="sensor_link">
+      <sensor name="sensor_ray" type="ray">
+        <pose>0.04 0 0 0 0 0</pose>
+        <ray>
+          <scan>
+            <horizontal>
+                <samples>3</samples>
+                <resolution>1.0</resolution>
+                <min_angle>-0.78</min_angle>
+                <max_angle>0.78</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.04</min>
+            <max>1.0</max>
+          </range>
+        </ray>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <update_rate>100.0</update_rate>
+        <plugin name="laser" filename="libgazebo_ros_ray_sensor.so">
+          <ros>
+            <remapping>~/out:=laser_scan</remapping>
+          </ros>
+          <output_type>sensor_msgs/LaserScan</output_type>
+        </plugin>
+      </sensor>
+  </gazebo>
+  
+  <joint name="sensor_joint" type="prismatic">
+    <axis xyz="0 1 0"/>
+    <origin rpy="0 0 0" xyz="0.1 0 0"/>
+    <parent link="link_0"/>
+    <child link="sensor_link"/>
+    <origin xyz="0 1 0"/>
+    <limit effort="2.62" lower="0" upper="0" velocity="1"/>
+  </joint>
+  
+</robot>

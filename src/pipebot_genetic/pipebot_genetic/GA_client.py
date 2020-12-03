@@ -1,6 +1,8 @@
 import rclpy
 import math
 import time
+import pickle
+import sys
 from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy
 from rclpy.qos import QoSProfile
@@ -12,18 +14,27 @@ from geometry_msgs.msg import PoseWithCovariance
 from std_srvs.srv import Empty
 from pipebot_services.srv import Genes
 
+SAVEFILE = 'optiWeights'
+GENERATIONS = 1000
+POP = 100
+
 
 class GA_Client(Node):
 
-    def __init__(self):
+    def __init__(self, savefile, gen, runs):
         super().__init__('GA_client')
         self.pos = (0,0)
         self.target = (4.5,0) #(10,-6)
         self.init_dist = 4.5#14.14
         self.time = 0
-        self.maxtime = 60
-        self.weights = 16
-        self.biases = 8
+        self.maxtime = 30
+        self.weights = 36#7 #16
+        self.biases = 6#8
+
+        self.GENS = gen
+        self.POP = runs
+
+        self.savefile = savefile
         self.instance = 0
         
         self.odom_subscriber = self.create_subscription(Odometry, '/bot1/odom', self.odom_callback, QoSProfile(
@@ -39,6 +50,15 @@ class GA_Client(Node):
         self.pause.wait_for_service()
         self.pause_sim()
 
+    def save(self, res):
+        with open(self.savefile, 'wb') as output:
+            pickle.dump(res, output, pickle.HIGHEST_PROTOCOL)
+
+    def run_save(self):
+        with open(self.savefile, 'rb') as input:
+            save = pickle.load(input)
+            self.launch_instance(save.x)
+    
     def odom_callback(self, msg):
         if(self.training):
             self.time = msg.header.stamp.sec
@@ -71,6 +91,7 @@ class GA_Client(Node):
     def launch_instance(self, args):
         self.pos = (0,0)
         self.time = 0
+        #w = [args[0],args[1],args[2],args[2],args[1],args[0],args[3],args[4],args[4],args[3],args[5],0.0,args[6],args[5],0.0,-args[6]]
         w = args[:self.weights]
         b = [0.0 for i in range(self.biases)]
         #b = args[self.weights:]
@@ -98,19 +119,35 @@ class GA_Client(Node):
 
         fitness = dist/self.init_dist - time_left/self.maxtime
         self.instance += 1
-        self.get_logger().info('%d: ' % (self.instance) + "Weights: {}\n".format(' '.join(map(str, w))) + "Biases: {}\n".format(' '.join(map(str, b))) + 'Fitness: %f \n' % (fitness))
+        self.get_logger().info('Instance #%d:' % (self.instance) + "Weights: {}\n".format(' '.join(map(str, w))) + "Biases: {}\n".format(' '.join(map(str, b))) + 'Fitness: %f \n' % (fitness))
         return fitness
 
     def optimize(self):
         self.instance = 0
         #differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)])
-        differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights)]) #no bias
+        res = differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights)], maxiter=self.GENS, popsize=self.POP) #no bias
+        self.save(res)
+        return(res)
+        
 
 def main(args=None):
+    if args is None:
+        args = sys.argv
     rclpy.init(args=args)
+    
+    genetic_algo = GA_Client(SAVEFILE, GENERATIONS, POP)
 
-    genetic_algo = GA_Client()
-    genetic_algo.optimize()
+    run_save = False
+    print(args)
+    if('--run_save' in args):
+        run_save = True
+
+    if(run_save):
+        genetic_algo.get_logger().info('Running saved instance...')
+        genetic_algo.run_save()
+    else:
+        genetic_algo.get_logger().info('Optimising...')
+        genetic_algo.optimize().x    
 
     genetic_algo.destroy_node()
     rclpy.shutdown()
