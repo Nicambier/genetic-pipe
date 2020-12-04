@@ -11,10 +11,7 @@ double CTRNN::activation(unsigned int i)
 {
     double sum = 0;
     for(unsigned int j=0; j<neurons.size(); ++j) {
-        if(i>inputSize and i<neurons.size()-outputSize and j>inputSize and j<neurons.size()-outputSize) //both nodes are in the inner layer
-            sum += weights[weight(j,i)] * oldNeurons[j];
-        else
-            sum += weights[weight(j,i)] * neurons[j];
+        sum += weights[weight(j,i)] * oldNeurons[j];
     }
     return -neurons[i] + sigmoid(bias[i] + sum);
 }
