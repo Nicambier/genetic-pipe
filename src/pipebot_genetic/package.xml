@@ -3,8 +3,8 @@
 <package format="3">
   <name>pipebot_genetic</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="nicolas@todo.todo">nicolas</maintainer>
+  <description>Meta-heuristic (Genetic Algorithm) + global launch file</description>
+  <maintainer email="n.p.cambier@leeds.ac.uk">Nicolas Cambier</maintainer>
   <license>TODO: License declaration</license>
 
   <test_depend>ament_copyright</test_depend>

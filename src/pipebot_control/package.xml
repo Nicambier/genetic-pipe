@@ -3,8 +3,8 @@
 <package format="3">
   <name>pipebot_control</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="nicolas@todo.todo">nicolas</maintainer>
+  <description>Robot controller, including a DNN/CTRNN with laser input and velocity output</description>
+  <maintainer email="n.p.cambier@leeds.ac.uk">Nicolas Cambier</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
