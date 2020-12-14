@@ -33,7 +33,7 @@ def generate_launch_description():
         parameters=[params]
     )
     
-    robot_spawner = Node(package='gazebo_ros', executable='spawn_entity.py', arguments=['-topic', 'robot_description', '-entity', LaunchConfiguration('rb_id'), '-robot_namespace', LaunchConfiguration('rb_id'), '-z','0.05'], output='screen')
+    robot_spawner = Node(package='gazebo_ros', executable='spawn_entity.py', arguments=['-topic', 'robot_description', '-entity', LaunchConfiguration('rb_id'), '-robot_namespace', LaunchConfiguration('rb_id'), '-z','0.11'], output='screen')
         
     return LaunchDescription([
         DeclareLaunchArgument(

@@ -11,6 +11,8 @@ Build:
     Requires ros-foxy and gazebo >= 11
     in main folder:
     colcon build
+    source install/setup.bash 
+    
 
 Launch:
     For basic simulation:

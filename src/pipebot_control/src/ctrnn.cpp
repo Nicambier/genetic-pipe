@@ -25,8 +25,9 @@ vector<double> CTRNN::run(vector<double> input)
     vector<double> output;
     for(unsigned int i=0; i<neurons.size(); ++i) {
         if(i<inputSize)
-            neurons[i] = input[i];
-        neurons[i] += activation(i);
+            neurons[i] = input[i] + activation(i);
+        else
+            neurons[i] += activation(i);
         if(i>= neurons.size() - outputSize) {
             output.push_back(neurons[i]);
         }

@@ -16,7 +16,7 @@ from pipebot_services.srv import Genes
 
 SAVEFILE = 'optiWeights'
 GENERATIONS = 1000
-POP = 100
+POP = 5
 
 
 class GA_Client(Node):
@@ -93,8 +93,8 @@ class GA_Client(Node):
         self.time = 0
         #w = [args[0],args[1],args[2],args[2],args[1],args[0],args[3],args[4],args[4],args[3],args[5],0.0,args[6],args[5],0.0,-args[6]]
         w = args[:self.weights]
-        b = [0.0 for i in range(self.biases)]
-        #b = args[self.weights:]
+        #b = [0.0 for i in range(self.biases)]
+        b = args[self.weights:]
         
         self.reset_sim()
         self.init_NN(w,b)
@@ -125,7 +125,7 @@ class GA_Client(Node):
     def optimize(self):
         self.instance = 0
         #differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)])
-        res = differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights)], maxiter=self.GENS, popsize=self.POP) #no bias
+        res = differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)], maxiter=self.GENS, popsize=self.POP)
         self.save(res)
         return(res)
         
