@@ -1,34 +1,6 @@
 <?xml version="1.0" ?>
 <robot name="sprintbot_basic_collisions">
     
-  <gazebo>
-    <plugin name='diff_drive' filename='libgazebo_ros_diff_drive.so'>
-      <ros>
-        <namespace>/bot1</namespace>
-        <!--remapping>cmd_vel:=cmd_demo</remapping-->
-        <remapping>odom:=odom_demo</remapping>
-      </ros>
-      <left_joint>left_motor</left_joint>
-      <right_joint>right_motor</right_joint>
-      <wheel_separation>0.08</wheel_separation>
-      <wheel_diameter>0.2</wheel_diameter>
-      <max_wheel_torque>2.61</max_wheel_torque>
-      <max_wheel_acceleration>0.5</max_wheel_acceleration>
-      <publish_odom>1</publish_odom>
-      <publish_odom_tf>1</publish_odom_tf>
-      <publish_wheel_tf>1</publish_wheel_tf>
-      <odometry_frame>odom_demo</odometry_frame>
-      <robot_base_frame>link_0</robot_base_frame>
-    </plugin>
-    
-    <plugin filename="libgazebo_ros_p3d.so " name="p3d">
-        <ros>
-            <namespace>/bot1</namespace>
-        </ros>
-        <body_name>link_0</body_name>
-    </plugin>  
-  </gazebo>
-    
   <link name="link_0">
     <inertial>
       <mass value="1.5"/>
@@ -236,5 +208,75 @@
     <origin xyz="0 1 0"/>
     <limit effort="2.62" lower="0" upper="0" velocity="1"/>
   </joint>
+  
+  <gazebo>
+    <!--plugin name='diff_drive' filename='libgazebo_ros_diff_drive.so'>
+      <ros>
+        <namespace>/bot1</namespace>
+        <remapping>odom:=odom_demo</remapping>
+      </ros>
+      <left_joint>left_motor</left_joint>
+      <right_joint>right_motor</right_joint>
+      <wheel_separation>0.08</wheel_separation>
+      <wheel_diameter>0.2</wheel_diameter>
+      <max_wheel_torque>2.61</max_wheel_torque>
+      <max_wheel_acceleration>0.5</max_wheel_acceleration>
+      <publish_odom>0</publish_odom>
+      <publish_odom_tf>1</publish_odom_tf>
+      <publish_wheel_tf>1</publish_wheel_tf>
+      <odometry_frame>odom_demo</odometry_frame>
+      <robot_base_frame>link_0</robot_base_frame>
+    </plugin-->
+    <plugin name="left_motor_plugin" filename="libgazebo_ros_simple_motor.so">
+        <ros>
+            <remapping>cmd_motor:=cmd_left_motor</remapping>
+        </ros>
+        <!-- Motor shaft name -->
+        <motor_shaft_name>left_motor</motor_shaft_name>
+        <!-- Maximum change in rpm per update.
+        Setting this to a large value, say 500.0, will cause instantaneous changes in speed.
+        Smaller values, say 5.0 or less, cause more gradual changes in speed "simulating" mass.
+        -->
+        <max_change_rpm>5.0</max_change_rpm>
+        <!-- Maximum rpm. -->
+        <max_rpm>500.0</max_rpm>
+        <!-- Maximum position change per update.
+        Similar to rpm, the maximum number of radians that will be moved per update.
+        For a full circle at 10Hz, 0.314r per update will take 2 seconds.
+        -->
+        <max_change_radians>0.314</max_change_radians>
+        <!-- Update rate in Hz -->
+        <update_rate>10.0</update_rate>
+      </plugin>
+      
+      <plugin name="right_motor_plugin" filename="libgazebo_ros_simple_motor.so">
+        <ros>
+            <remapping>cmd_motor:=cmd_right_motor</remapping>
+        </ros>
+        <!-- Motor shaft name -->
+        <motor_shaft_name>right_motor</motor_shaft_name>
+        <!-- Maximum change in rpm per update.
+        Setting this to a large value, say 500.0, will cause instantaneous changes in speed.
+        Smaller values, say 5.0 or less, cause more gradual changes in speed "simulating" mass.
+        -->
+        <max_change_rpm>5.0</max_change_rpm>
+        <!-- Maximum rpm. -->
+        <max_rpm>500.0</max_rpm>
+        <!-- Maximum position change per update.
+        Similar to rpm, the maximum number of radians that will be moved per update.
+        For a full circle at 10Hz, 0.314r per update will take 2 seconds.
+        -->
+        <max_change_radians>0.314</max_change_radians>
+        <!-- Update rate in Hz -->
+        <update_rate>10.0</update_rate>
+    </plugin>
+    
+    <plugin filename="libgazebo_ros_p3d.so " name="p3d">
+        <ros>
+            <namespace>/bot1</namespace>
+        </ros>
+        <body_name>link_0</body_name>
+    </plugin>  
+  </gazebo>
   
 </robot>

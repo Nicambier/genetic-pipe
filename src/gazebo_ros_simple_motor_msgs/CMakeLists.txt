@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(pipebot_control)
+project(gazebo_ros_simple_motor_msgs)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -17,21 +17,14 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(control_msgs REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rclcpp_action REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(gazebo REQUIRED)
-find_package(pipebot_services REQUIRED) 
-find_package(gazebo_ros_simple_motor_msgs REQUIRED) 
-
-include_directories(${GAZEBO_INCLUDE_DIRS})
-link_directories(${GAZEBO_LIBRARY_DIRS})
-list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/MotorControl.msg"
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -43,29 +36,5 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
-
-install(DIRECTORY
-  launch
-  config
-  DESTINATION share/${PROJECT_NAME}/
-)
-
-include_directories(headers)
-add_executable(net_control src/net_control.cpp src/ctrnn.cpp headers/net_control.h headers/ctrnn.h)
-ament_target_dependencies(net_control
-  rclcpp
-  rclcpp_action
-  control_msgs
-  geometry_msgs
-  sensor_msgs
-  pipebot_services
-  gazebo_ros_simple_motor_msgs
-)
-
-install(TARGETS
-  net_control
-  DESTINATION lib/${PROJECT_NAME}/
-)
 
 ament_package()

@@ -13,7 +13,8 @@ PipebotControl::PipebotControl() : Node("PipebotControl")
         bind(&PipebotControl::OnSensorMsg, this, placeholders::_1));
     
     // Advertise velocity commands
-    cmd_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", default_qos); 
+    cmd_right_pub_ = this->create_publisher<gazebo_ros_simple_motor_msgs::msg::MotorControl>("cmd_right_motor", default_qos); 
+    cmd_left_pub_ = this->create_publisher<gazebo_ros_simple_motor_msgs::msg::MotorControl>("cmd_left_motor", default_qos); 
     
     init_service = this->create_service<pipebot_services::srv::Genes>("neural_network", bind(&PipebotControl::OnGeneSrv, this, placeholders::_1,placeholders::_2));
     
@@ -67,16 +68,21 @@ void PipebotControl::OnSensorMsg(const sensor_msgs::msg::LaserScan::SharedPtr _m
     }
 
     vector<double> output = nn.run(input);
-    auto cmd_msg = std::make_unique<geometry_msgs::msg::Twist>();
-    cmd_msg->linear.x = 0.5 - output[0]; //forward or backward
-    cmd_msg->angular.z = 0.5 - output[1]; //left or right
+    auto cmd_left_msg = gazebo_ros_simple_motor_msgs::msg::MotorControl();
+    auto cmd_right_msg = gazebo_ros_simple_motor_msgs::msg::MotorControl();
+    cmd_left_msg.mode = 2;
+    cmd_left_msg.rpm = 60*(0.5 - output[0]);
+    cmd_right_msg.mode = 2;
+    cmd_left_msg.rpm = 60*(0.5 - output[1]);
     
-    cmd_pub_->publish(move(cmd_msg));
+    cmd_left_pub_->publish(cmd_left_msg);
+    cmd_right_pub_->publish(cmd_right_msg);
 }
 
 void PipebotControl::OnGeneSrv(const shared_ptr<pipebot_services::srv::Genes::Request> request, shared_ptr<pipebot_services::srv::Genes::Response> response)
 {
-    cmd_pub_->publish(move(std::make_unique<geometry_msgs::msg::Twist>()));
+    cmd_left_pub_->publish(gazebo_ros_simple_motor_msgs::msg::MotorControl());
+    cmd_right_pub_->publish(gazebo_ros_simple_motor_msgs::msg::MotorControl());
     init(request->weights, request->biases);
     response->success = true;
 }

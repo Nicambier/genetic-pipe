@@ -24,8 +24,8 @@ class GA_Client(Node):
     def __init__(self, savefile, gen, runs):
         super().__init__('GA_client')
         self.pos = (0,0)
-        self.target = (4.5,0) #(10,-6)
-        self.init_dist = 4.5#14.14
+        self.target = (6,0) #(10,-6)
+        self.init_dist = 6#14.14
         self.time = 0
         self.maxtime = 30
         self.weights = 36#7 #16

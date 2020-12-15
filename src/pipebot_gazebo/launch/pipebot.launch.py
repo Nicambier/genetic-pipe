@@ -11,7 +11,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     gazebo_path = get_package_share_directory('gazebo_ros')
-    world = get_package_share_directory('pipebot_gazebo')+'/worlds/maze.world'
+    world = get_package_share_directory('pipebot_gazebo')+'/worlds/pipe_obstacle.world'
     urdf = get_package_share_directory('pipebot_description')+'/urdf/pipebot.urdf'
     control = get_package_share_directory('pipebot_control')
         
