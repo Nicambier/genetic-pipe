@@ -13,7 +13,7 @@ double CTRNN::activation(unsigned int i)
     for(unsigned int j=0; j<neurons.size(); ++j) {
         sum += weights[weight(j,i)] * oldNeurons[j];
     }
-    return -neurons[i] + sigmoid(bias[i] + sum);
+    return -oldNeurons[i] + sigmoid(bias[i] + sum);
 }
 
 vector<double> CTRNN::run(vector<double> input)
@@ -25,9 +25,8 @@ vector<double> CTRNN::run(vector<double> input)
     vector<double> output;
     for(unsigned int i=0; i<neurons.size(); ++i) {
         if(i<inputSize)
-            neurons[i] = input[i] + activation(i);
-        else
-            neurons[i] += activation(i);
+            neurons[i] = input[i];
+        neurons[i] += 0.001*activation(i);
         if(i>= neurons.size() - outputSize) {
             output.push_back(neurons[i]);
         }

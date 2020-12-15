@@ -14,7 +14,7 @@ from geometry_msgs.msg import PoseWithCovariance
 from std_srvs.srv import Empty
 from pipebot_services.srv import Genes
 
-SAVEFILE = 'optiWeights'
+SAVEFILE = 'optiParams'
 GENERATIONS = 1000
 POP = 5
 
@@ -50,8 +50,8 @@ class GA_Client(Node):
         self.pause.wait_for_service()
         self.pause_sim()
 
-    def save(self, res):
-        with open(self.savefile, 'wb') as output:
+    def save(self, res, savefile):
+        with open(savefile, 'wb') as output:
             pickle.dump(res, output, pickle.HIGHEST_PROTOCOL)
 
     def run_save(self):
@@ -126,7 +126,7 @@ class GA_Client(Node):
         self.instance = 0
         #differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)])
         res = differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)], maxiter=self.GENS, popsize=self.POP)
-        self.save(res)
+        self.save(res, self.savefile)
         return(res)
         
 

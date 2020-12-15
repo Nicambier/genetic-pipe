@@ -64,7 +64,7 @@ void PipebotControl::OnSensorMsg(const sensor_msgs::msg::LaserScan::SharedPtr _m
     vector<double> input;
     //0=right 1=front 2=left
     for (auto i = 0u; i < _msg->ranges.size(); ++i) {
-      input.push_back(1 - (_msg->ranges[i]>1?1:_msg->ranges[i])); //signal gets stronger as obstacle gets closer
+      input.push_back(1.0 - (_msg->ranges[i]>1.0?1.0:_msg->ranges[i])); //signal gets stronger as obstacle gets closer
     }
 
     vector<double> output = nn.run(input);
@@ -73,7 +73,7 @@ void PipebotControl::OnSensorMsg(const sensor_msgs::msg::LaserScan::SharedPtr _m
     cmd_left_msg.mode = 2;
     cmd_left_msg.rpm = 60*(0.5 - output[0]);
     cmd_right_msg.mode = 2;
-    cmd_left_msg.rpm = 60*(0.5 - output[1]);
+    cmd_right_msg.rpm = 60*(0.5 - output[1]);
     
     cmd_left_pub_->publish(cmd_left_msg);
     cmd_right_pub_->publish(cmd_right_msg);
