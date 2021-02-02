@@ -6,6 +6,8 @@
 #include "pipebot_services/srv/genes.hpp"  
 #include "gazebo_ros_simple_motor_msgs/msg/motor_control.hpp"  
 
+#include <math.h> 
+#include <stdlib.h> 
 #include <memory>
 #include <utility>
 #include <vector>
@@ -18,7 +20,7 @@ public:
   PipebotControl();
 
 private:
-  void init(std::vector<double> weights, std::vector<double> biases);
+  void init(std::vector<double> weights, std::vector<double> biases, bool symmetrical=false);
     
   void OnSensorMsg(const sensor_msgs::msg::LaserScan::SharedPtr _msg);
   void OnGeneSrv(const std::shared_ptr<pipebot_services::srv::Genes::Request> request, std::shared_ptr<pipebot_services::srv::Genes::Response> response);
@@ -32,4 +34,5 @@ private:
   
   CTRNN nn;
   rclcpp::Service<pipebot_services::srv::Genes>::SharedPtr init_service;
+  int last_scan_nsec;
 };

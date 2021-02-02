@@ -2,7 +2,9 @@
 
 #include <vector>
 #include <map>
+#include <string>
 #include <iostream>
+#include <sstream>  
 #include <boost/functional/hash.hpp>
 #include <unordered_map>
 #include <utility>
@@ -16,7 +18,9 @@ public:
   
   void setWeight(unsigned int i, unsigned int j, double w) {weights[weight(i,j)] = w;}
   void setBias(unsigned int i, double b) {bias[i] = b;}
-  std::vector<double> run(std::vector<double> input);
+  std::vector<double> run(std::vector<double> input, double deltaT);
+  
+  std::string print();
 
 private:
   double sigmoid(double z) {return 1/(1+exp(-z));}

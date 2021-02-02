@@ -3,6 +3,7 @@ import math
 import time
 import pickle
 import sys
+from math import hypot, asin, atan2, pi, copysign
 from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy
 from rclpy.qos import QoSProfile
@@ -12,7 +13,10 @@ from nav_msgs.msg import Odometry
 from std_msgs.msg import Header
 from geometry_msgs.msg import PoseWithCovariance
 from std_srvs.srv import Empty
+from gazebo_msgs.srv import SpawnEntity
+from gazebo_msgs.srv import DeleteEntity
 from pipebot_services.srv import Genes
+from pipebot_genetic.obstacle_generator import generate_obstacle
 
 SAVEFILE = 'optiParams'
 GENERATIONS = 1000
@@ -24,12 +28,14 @@ class GA_Client(Node):
     def __init__(self, savefile, gen, runs):
         super().__init__('GA_client')
         self.pos = (0,0)
+        self.roll = 0
+        self.pitch = 0
         self.target = (6,0) #(10,-6)
-        self.init_dist = 6#14.14
+        self.init_dist = hypot(self.pos[0]-self.target[0], self.pos[1]-self.target[1])
         self.time = 0
         self.maxtime = 30
-        self.weights = 36#7 #16
-        self.biases = 6#8
+        self.weights = 25
+        self.biases = 7
 
         self.GENS = gen
         self.POP = runs
@@ -45,6 +51,8 @@ class GA_Client(Node):
         self.reset = self.create_client(Empty, '/reset_simulation')
         self.pause = self.create_client(Empty, '/pause_physics')
         self.unpause = self.create_client(Empty, '/unpause_physics')
+        self.delete_entity = self.create_client(DeleteEntity, '/delete_entity')
+        self.spawn_entity = self.create_client(SpawnEntity, '/spawn_entity')
         self.training = False
 
         self.pause.wait_for_service()
@@ -63,6 +71,13 @@ class GA_Client(Node):
         if(self.training):
             self.time = msg.header.stamp.sec
             self.pos = (msg.pose.pose.position.x,msg.pose.pose.position.y)
+            q = (msg.pose.pose.orientation.x,msg.pose.pose.orientation.y,msg.pose.pose.orientation.z,msg.pose.pose.orientation.w)
+            self.roll = atan2(2*(q[3]*q[0] + q[1]*q[2]), 1 - 2*(q[0]*q[0] + q[1]*q[1]))
+            sinp = 2*(q[3]*q[1] + q[2]*q[0])
+            if(abs(sinp) >= 1):
+                self.pitch = copysign(pi/2,sinp)
+            else:
+                self.pitch = asin(sinp)
 
     def init_NN(self, weight, bias):
         req = Genes.Request()
@@ -76,7 +91,17 @@ class GA_Client(Node):
     def reset_sim(self):
         future = self.reset.call_async(Empty.Request())
         rclpy.spin_until_future_complete(self, future)
-        return future.result()
+        del_req = DeleteEntity.Request()
+        del_req.name = 'obstacle'
+        future2 = self.delete_entity.call_async(del_req)
+        rclpy.spin_until_future_complete(self, future2)
+        time.sleep(0.5)
+        spawn_req = SpawnEntity.Request()
+        spawn_req.name = 'obstacle'
+        spawn_req.xml = generate_obstacle(0.5,-0.5,3,6,0.4)
+        future3 = self.spawn_entity.call_async(spawn_req)
+        rclpy.spin_until_future_complete(self, future3)
+        return future.result(), future2.result(), future3.result()
 
     def pause_sim(self):
         future = self.pause.call_async(Empty.Request())
@@ -90,15 +115,17 @@ class GA_Client(Node):
 
     def launch_instance(self, args):
         self.pos = (0,0)
+        self.pitch = 0
+        self.roll = 0
         self.time = 0
-        #w = [args[0],args[1],args[2],args[2],args[1],args[0],args[3],args[4],args[4],args[3],args[5],0.0,args[6],args[5],0.0,-args[6]]
         w = args[:self.weights]
         #b = [0.0 for i in range(self.biases)]
         b = args[self.weights:]
         
-        self.reset_sim()
+        res1, res2, res3 = self.reset_sim()
+        self.get_logger().info(res3.status_message)
         self.init_NN(w,b)
-        time.sleep(1)
+        time.sleep(0.5)
         self.unpause_sim()
         self.training = True
         while(self.time<self.maxtime and self.pos[0]<self.target[0]):
@@ -112,12 +139,8 @@ class GA_Client(Node):
             dist = 0
         else:
             dist = math.sqrt(pow(self.pos[0] - self.target[0],2) + pow(self.pos[1] - self.target[1],2))
-        if(self.time>=self.maxtime):
-            time_left = 0
-        else:
-            time_left = self.maxtime - self.time
 
-        fitness = dist/self.init_dist - time_left/self.maxtime
+        fitness = dist/self.init_dist + min(self.time,self.maxtime)/self.maxtime + ((self.pitch/pi)**2 + (self.roll/pi)**2)/4 #arrive as soon and as straight as possible
         self.instance += 1
         self.get_logger().info('Instance #%d:' % (self.instance) + "Weights: {}\n".format(' '.join(map(str, w))) + "Biases: {}\n".format(' '.join(map(str, b))) + 'Fitness: %f \n' % (fitness))
         return fitness

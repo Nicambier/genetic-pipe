@@ -21,37 +21,69 @@ PipebotControl::PipebotControl() : Node("PipebotControl")
     init(vector<double>(36,0),vector<double>(6,0));
 }
 
-void PipebotControl::init(vector<double> weights, vector<double> biases) {
-    unsigned int input = 3, hidden_layer = 1, output = 2;
+void PipebotControl::init(vector<double> weights, vector<double> biases, bool symmetrical) {
+    last_scan_nsec = 0;
+    unsigned int input = 3, hidden_layer = 2, output = 2;
     
     nn = CTRNN(input,hidden_layer,output);
+    
     unsigned int nb_nodes = input + hidden_layer + output;
     unsigned int weight_idx = 0;
-    for(unsigned int i=0; i<nb_nodes; ++i)
-        for(unsigned int j=0; j<nb_nodes; ++j)
-            nn.setWeight(i,j,weights[weight_idx]);
-        
-    /*//INPUT
-    nn.setWeight(0,3,weights[0]);
-    nn.setWeight(1,3,weights[1]);
-    nn.setWeight(2,3,weights[2]);
-    nn.setWeight(0,4,weights[3]);
-    nn.setWeight(1,4,weights[4]);
-    nn.setWeight(2,4,weights[5]);
     
-    //HIDDEN
-    nn.setWeight(3,3,weights[6]);
-    nn.setWeight(3,4,weights[7]);
-    nn.setWeight(4,3,weights[8]);
-    nn.setWeight(4,4,weights[9]);
+    if(symmetrical) { //good luck to ever understand this. this should make the nn symmetrical but I'm not ever sure it works outside of CTRNN(3,2,2)
+        unsigned int i_layer_start, i_layer_size, j_layer_start, j_layer_size;
+        for(unsigned int i_layer=0; i_layer<3; ++i_layer) {
+            switch(i_layer) {
+                case 0:
+                    i_layer_start = 0;
+                    i_layer_size = input;
+                    break;
+                case 1:
+                    i_layer_start = input;
+                    i_layer_size = hidden_layer;
+                    break;
+                case 2:
+                    i_layer_start = input + hidden_layer;
+                    i_layer_size = output;
+                    break;
+            }
+            
+            for(unsigned int i=0; i<round(i_layer_size/2.0); ++i) {
+                for(unsigned int j_layer=0; j_layer<3; ++j_layer) {
+                    switch(j_layer) {
+                        case 0:
+                            j_layer_start = 0;
+                            j_layer_size = input;
+                            break;
+                        case 1:
+                            j_layer_start = input;
+                            j_layer_size = hidden_layer;
+                            break;
+                        case 2:
+                            j_layer_start = input + hidden_layer;
+                            j_layer_size = output;
+                            break;
+                    }
+                    //if in center row, only do half columns coz the other half is filled by symmetry
+                    unsigned int cols = (i_layer_size%2==1 and i==i_layer_size/2)? round(j_layer_size / 2.0) : j_layer_size; 
+                    for(unsigned int j=0; j<cols; ++j) {
+                        nn.setWeight(i_layer_start + i,j_layer_start + j,weights[weight_idx]); 
+                        nn.setWeight(i_layer_start + i_layer_size -1-i,j_layer_start + j_layer_size -1-j,weights[weight_idx]);
+                        ++weight_idx;
+                    }
+                }
+            }
+        }
+    } else {
+        for(unsigned int i=0; i<nb_nodes; ++i) {
+            for(unsigned int j=0; j<nb_nodes; ++j) {
+                nn.setWeight(i,j,weights[weight_idx]);
+                ++weight_idx;
+            }
+        }
+    }
     
-    //OUTPUT
-    nn.setWeight(3,5,weights[10]);
-    nn.setWeight(3,6,weights[11]);
-    nn.setWeight(3,7,weights[12]);
-    nn.setWeight(4,5,weights[13]);
-    nn.setWeight(4,6,weights[14]);
-    nn.setWeight(4,7,weights[15]);*/
+    //RCLCPP_INFO(rclcpp::get_logger("rclcpp"), nn.print());
     
     for(unsigned int i=0; i<input+hidden_layer+output; ++i)
         nn.setBias(i,biases[i]);
@@ -61,13 +93,17 @@ void PipebotControl::init(vector<double> weights, vector<double> biases) {
 /// \param[in] _msg Laser scan message
 void PipebotControl::OnSensorMsg(const sensor_msgs::msg::LaserScan::SharedPtr _msg)
 {
+    int nsec = _msg->header.stamp.nanosec;
+    double deltaT = (nsec - last_scan_nsec) * 0.000000001;
+    if(deltaT<0) deltaT += 1;
+    last_scan_nsec = nsec;
     vector<double> input;
     //0=right 1=front 2=left
     for (auto i = 0u; i < _msg->ranges.size(); ++i) {
       input.push_back(1.0 - (_msg->ranges[i]>1.0?1.0:_msg->ranges[i])); //signal gets stronger as obstacle gets closer
     }
 
-    vector<double> output = nn.run(input);
+    vector<double> output = nn.run(input, deltaT);
     auto cmd_left_msg = gazebo_ros_simple_motor_msgs::msg::MotorControl();
     auto cmd_right_msg = gazebo_ros_simple_motor_msgs::msg::MotorControl();
     cmd_left_msg.mode = 2;
@@ -83,7 +119,7 @@ void PipebotControl::OnGeneSrv(const shared_ptr<pipebot_services::srv::Genes::Re
 {
     cmd_left_pub_->publish(gazebo_ros_simple_motor_msgs::msg::MotorControl());
     cmd_right_pub_->publish(gazebo_ros_simple_motor_msgs::msg::MotorControl());
-    init(request->weights, request->biases);
+    init(request->weights, request->biases, true);
     response->success = true;
 }
 
