@@ -9,28 +9,19 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>rclcpp</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>pipebot_services</build_depend>  
-  <build_depend>gazebo_ros_simple_motor</build_depend>  
-  <build_depend>gazebo_ros_simple_motor_msgs</build_depend> 
-  <build_depend>control_msgs</build_depend> 
-  <exec_depend>pipebot_services</exec_depend> 
-  <exec_depend>rclcpp</exec_depend>
-  <exec_depend>controller_manager</exec_depend>
-  <exec_depend>joint_state_controller</exec_depend>
-  <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>effort_controllers</exec_depend>
-  <exec_depend>gazebo_ros_simple_motor</exec_depend>  
-  <exec_depend>gazebo_ros_simple_motor_msgs</exec_depend> 
-  <exec_depend>control_msgs</exec_depend> 
+  <depend>geometry_msgs</depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>pipebot_services</depend>
+  <depend>effort_controllers</depend>
+  <depend>gazebo_ros_simple_motor</depend>  
+  <depend>gazebo_ros_simple_motor_msgs</depend>
 
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
   <export>
-    <build_type>ament_cmake</build_type>
+    <type>ament_cmake</type>
   </export>
 </package>
