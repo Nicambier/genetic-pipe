@@ -15,6 +15,7 @@
   <build_depend>pipebot_services</build_depend>  
   <build_depend>gazebo_ros_simple_motor</build_depend>  
   <build_depend>gazebo_ros_simple_motor_msgs</build_depend> 
+  <build_depend>control_msgs</build_depend> 
   <exec_depend>pipebot_services</exec_depend> 
   <exec_depend>rclcpp</exec_depend>
   <exec_depend>controller_manager</exec_depend>
@@ -23,6 +24,7 @@
   <exec_depend>effort_controllers</exec_depend>
   <exec_depend>gazebo_ros_simple_motor</exec_depend>  
   <exec_depend>gazebo_ros_simple_motor_msgs</exec_depend> 
+  <exec_depend>control_msgs</exec_depend> 
 
 
   <test_depend>ament_lint_auto</test_depend>
