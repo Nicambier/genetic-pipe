@@ -56,7 +56,6 @@ add_executable(net_control src/net_control.cpp src/ctrnn.cpp headers/net_control
 ament_target_dependencies(net_control
   rclcpp
   rclcpp_action
-  control_msgs
   geometry_msgs
   sensor_msgs
   pipebot_services
