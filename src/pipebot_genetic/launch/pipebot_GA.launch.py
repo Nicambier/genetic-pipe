@@ -26,7 +26,7 @@ def generate_launch_description():
     )
         
     return LaunchDescription([
-        DeclareLaunchArgument('gui', default_value='false', description='Set to "false" to run headless.'),        
+        DeclareLaunchArgument('gui', default_value='false', description='Set to "false" to run headless.'),
         IncludeLaunchDescription(PythonLaunchDescriptionSource([simulation, '/launch/pipebot.launch.py'])),
         genetic_algo
     ])
