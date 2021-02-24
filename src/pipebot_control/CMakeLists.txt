@@ -23,6 +23,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(gazebo REQUIRED)
 find_package(pipebot_services REQUIRED) 
+find_package(gazebo_ros_simple_motor REQUIRED) 
 find_package(gazebo_ros_simple_motor_msgs REQUIRED) 
 
 include_directories(${GAZEBO_INCLUDE_DIRS})
