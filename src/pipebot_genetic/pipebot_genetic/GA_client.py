@@ -18,7 +18,7 @@ from gazebo_msgs.srv import DeleteEntity
 from pipebot_services.srv import Genes
 from pipebot_genetic.obstacle_generator import generate_obstacle
 
-SAVEFILE = 'optiParams'
+SAVEFILE = '~/optiParams'
 GENERATIONS = 1
 POP = 1
 
