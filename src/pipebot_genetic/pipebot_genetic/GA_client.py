@@ -30,12 +30,14 @@ class GA_Client(Node):
         self.pos = (0,0)
         self.roll = 0
         self.pitch = 0
-        self.target = (6,0) #(10,-6)
+        self.target = (5,0) #(10,-6)
         self.init_dist = hypot(self.pos[0]-self.target[0], self.pos[1]-self.target[1])
         self.time = 0
         self.maxtime = 30
         self.weights = 25
         self.biases = 7
+
+        self.obstacle_descr = generate_obstacle(0.5,-0.5,3,6,0.4)
 
         self.GENS = gen
         self.POP = runs
@@ -98,7 +100,7 @@ class GA_Client(Node):
         time.sleep(0.5)
         spawn_req = SpawnEntity.Request()
         spawn_req.name = 'obstacle'
-        spawn_req.xml = generate_obstacle(0.5,-0.5,3,6,0.4)
+        spawn_req.xml = self.obstacle_descr
         future3 = self.spawn_entity.call_async(spawn_req)
         rclpy.spin_until_future_complete(self, future3)
         return future.result(), future2.result(), future3.result()
