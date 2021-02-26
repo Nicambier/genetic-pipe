@@ -19,8 +19,8 @@ from pipebot_services.srv import Genes
 from pipebot_genetic.obstacle_generator import generate_obstacle
 
 SAVEFILE = 'optiParams'
-GENERATIONS = 1000
-POP = 5
+GENERATIONS = 1
+POP = 1
 
 
 class GA_Client(Node):
