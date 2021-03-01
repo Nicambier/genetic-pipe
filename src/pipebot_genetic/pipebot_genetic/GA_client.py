@@ -125,7 +125,6 @@ class GA_Client(Node):
         b = args[self.weights:]
         
         res1, res2, res3 = self.reset_sim()
-        self.get_logger().info(res3.status_message)
         self.init_NN(w,b)
         time.sleep(0.5)
         self.unpause_sim()
@@ -169,7 +168,6 @@ def main(args=None):
         SAVEFILE = args[args.index('-o')+1]
     
     genetic_algo = GA_Client(SAVEFILE, GENERATIONS, POP)
-    genetic_algo.get_logger().info('Result will be saved in %s', SAVEFILE)
 
     if(run_save):
         genetic_algo.get_logger().info('Running saved instance...')
