@@ -15,14 +15,18 @@ def generate_launch_description():
     simulation = get_package_share_directory('pipebot_gazebo')
 
     genetic_args = []
-    if('run_save:=true' in sys.argv):
-        genetic_args = '--run_save'
+    for arg in sys.argv:
+        if(arg=='run_save:=true'):
+            genetic_args.append('--run_save')
+        elif('output:=' in arg):
+            genetic_args.append('-o')
+            genetic_args.append(arg.strip('output:='))
     
     genetic_algo = Node(
         package='pipebot_genetic',
         executable='GA_client',
         output='screen',
-        arguments=[genetic_args]
+        arguments=genetic_args
     )
         
     return LaunchDescription([

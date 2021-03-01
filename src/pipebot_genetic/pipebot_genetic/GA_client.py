@@ -18,7 +18,7 @@ from gazebo_msgs.srv import DeleteEntity
 from pipebot_services.srv import Genes
 from pipebot_genetic.obstacle_generator import generate_obstacle
 
-SAVEFILE = '~/optiParams'
+SAVEFILE = 'optiParams'
 GENERATIONS = 1
 POP = 1
 
@@ -166,6 +166,9 @@ def main(args=None):
     print(args)
     if('--run_save' in args):
         run_save = True
+    if('-o' in args):
+        SAVEFILE = args[args.index('-o')+1]
+    self.get_logger().info('Result will be saved in %s', SAVEFILE)
 
     if(run_save):
         genetic_algo.get_logger().info('Running saved instance...')
