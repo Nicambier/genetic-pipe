@@ -167,7 +167,7 @@ def main(args=None):
         run_save = True
     if('-o' in args):
         SAVEFILE = args[args.index('-o')+1]
-    self.get_logger().info('Result will be saved in %s', SAVEFILE)
+    genetic_algo.get_logger().info('Result will be saved in %s', SAVEFILE)
     
     genetic_algo = GA_Client(SAVEFILE, GENERATIONS, POP)
 
