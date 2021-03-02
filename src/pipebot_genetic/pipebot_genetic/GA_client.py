@@ -19,8 +19,8 @@ from pipebot_services.srv import Genes
 from pipebot_genetic.obstacle_generator import generate_obstacle
 
 SAVEFILE = 'optiParams'
-GENERATIONS = 1
-POP = 1
+GENERATIONS = 1000
+POP = 5
 
 
 class GA_Client(Node):
@@ -161,11 +161,18 @@ def main(args=None):
 
     run_save = False
     print(args)
-    global SAVEFILE
-    if('--run_save' in args):
-        run_save = True
-    if('-o' in args):
-        SAVEFILE = args[args.index('-o')+1]
+    for arg in args:
+        if(arg=='run_save:=true'):
+            run_save = True
+        elif('output:=' in arg):
+            global SAVEFILE
+            SAVEFILE = arg.strip('output:=')
+        elif('generations:=' in arg):
+            global GENERATIONS
+            GENERATIONS = int(arg.strip('generations:='))
+        elif('iter:=' in arg):
+            global POP
+            POP = int(arg.strip('iter:='))
 
     genetic_algo = GA_Client(SAVEFILE, GENERATIONS, POP)
 
