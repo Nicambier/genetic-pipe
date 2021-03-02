@@ -61,11 +61,11 @@ class GA_Client(Node):
         self.pause_sim()
 
     def save(self, res, savefile):
-        with open(savefile, 'w+') as output:
+        with open(savefile, 'wb+') as output:
             pickle.dump(res, output, pickle.HIGHEST_PROTOCOL)
 
     def run_save(self):
-        with open(self.savefile, 'r') as input:
+        with open(self.savefile, 'rb') as input:
             save = pickle.load(input)
             self.launch_instance(save.x)
     
@@ -166,7 +166,7 @@ def main(args=None):
         run_save = True
     if('-o' in args):
         SAVEFILE = args[args.index('-o')+1]
-    
+
     genetic_algo = GA_Client(SAVEFILE, GENERATIONS, POP)
 
     if(run_save):
