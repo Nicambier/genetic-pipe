@@ -35,7 +35,6 @@ def generate_obstacle(left_wall_y, right_wall_y, length, sections, min_width):
     for i in range(sections):
         #max_y = -min_width/2
         max_y = passage_points[i] - min_width
-        print(passage_points[i],max_y)
         link = tag.replace('link_name','obstacle_right_'+str(i))
         min_rot = -atan((y_pos-right_wall_y)/section_length)
         max_rot = atan((max_y-y_pos)/section_length)

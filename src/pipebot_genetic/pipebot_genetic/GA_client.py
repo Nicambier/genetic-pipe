@@ -2,7 +2,7 @@ import rclpy
 import math
 import time
 import pickle
-import sys
+import sys, signal, os
 from math import hypot, asin, atan2, pi, copysign
 from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy
@@ -63,6 +63,7 @@ class GA_Client(Node):
     def save(self, res, savefile):
         with open(savefile, 'wb+') as output:
             pickle.dump(res, output, pickle.HIGHEST_PROTOCOL)
+        self.get_logger().info("Best setting saved to "+savefile)
 
     def run_save(self):
         with open(self.savefile, 'rb') as input:
@@ -149,9 +150,9 @@ class GA_Client(Node):
     def optimize(self):
         self.instance = 0
         #differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)])
-        res = differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)], maxiter=self.GENS, popsize=self.POP, polish=False)
+        res = differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)], maxiter=self.GENS, popsize=self.POP, polish=True)
         self.save(res, self.savefile)
-        return(res)
+        return(res)        
         
 
 def main(args=None):
@@ -185,6 +186,7 @@ def main(args=None):
 
     genetic_algo.destroy_node()
     rclpy.shutdown()
+    os.killpg(os.getppid(), signal.SIGKILL) #kill all nodes launched with GA_client
 
 
 if __name__ == '__main__':

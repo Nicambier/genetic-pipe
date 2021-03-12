@@ -46,13 +46,3 @@ def generate_launch_description():
         robot_state_publisher,
         robot_spawner
     ])
-
-
- #<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-    #output="screen" ns="/rrbot" args="joint1_position_controller joint2_position_controller joint_state_controller"/>
-
-  #<!-- convert joint states to TF transforms for rviz, etc -->
-  #<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
-    #respawn="false" output="screen">
-    #<remap from="/joint_states" to="/rrbot/joint_states" />
-  #</node>
