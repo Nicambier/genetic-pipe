@@ -2,7 +2,13 @@ import rclpy
 import math
 import time
 import pickle
-import sys, signal, os, io, contextlib
+import sys
+import signal
+import os
+import io
+import contextlib
+import psutil
+import subprocess
 from math import hypot, asin, atan2, pi, copysign
 from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy
@@ -173,13 +179,13 @@ def main(args=None):
             run_save = True
         elif('output:=' in arg):
             global SAVEFILE
-            SAVEFILE = arg.strip('output:=')
+            SAVEFILE = arg.replace('output:=','')
         elif('generations:=' in arg):
             global GENERATIONS
-            GENERATIONS = int(arg.strip('generations:='))
+            GENERATIONS = int(arg.replace('generations:=',''))
         elif('popsize:=' in arg):
             global POP
-            POP = int(arg.strip('popsize:='))
+            POP = int(arg.replace('popsize:=',''))
         elif(arg=='polish:=True'):
             polish=True
 
@@ -194,7 +200,12 @@ def main(args=None):
 
     genetic_algo.destroy_node()
     rclpy.shutdown()
-    os.killpg(os.getppid(), signal.SIGKILL) #kill all nodes launched with GA_client
+    pid = os.getpid()
+    process = psutil.Process(os.getppid())
+    for proc in process.children(recursive=True):
+        if(proc.pid!=pid):
+            proc.kill()
+    process.kill()
 
 
 if __name__ == '__main__':
