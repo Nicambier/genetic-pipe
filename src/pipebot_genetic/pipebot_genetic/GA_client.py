@@ -2,7 +2,7 @@ import rclpy
 import math
 import time
 import pickle
-import sys, signal, os
+import sys, signal, os, io, contextlib
 from math import hypot, asin, atan2, pi, copysign
 from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy
@@ -60,10 +60,13 @@ class GA_Client(Node):
         self.pause.wait_for_service()
         self.pause_sim()
 
-    def save(self, res, savefile):
+    def save(self, res, evo_output, savefile):
         with open(savefile, 'wb+') as output:
             pickle.dump(res, output, pickle.HIGHEST_PROTOCOL)
         self.get_logger().info("Best setting saved to "+savefile)
+        with open(savefile+'.o', 'w+') as output:
+            output.write(evo_output.getvalue())
+        self.get_logger().info("Evolution output saved to "+savefile+".o")
 
     def run_save(self):
         with open(self.savefile, 'rb') as input:
@@ -147,11 +150,13 @@ class GA_Client(Node):
         self.get_logger().info('Instance #%d:' % (self.instance) + "Weights: {}\n".format(' '.join(map(str, w))) + "Biases: {}\n".format(' '.join(map(str, b))) + 'Fitness: %f \n' % (fitness))
         return fitness
 
-    def optimize(self):
+    def optimize(self, polish):
         self.instance = 0
         #differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)])
-        res = differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)], maxiter=self.GENS, popsize=self.POP, polish=True)
-        self.save(res, self.savefile)
+        evo_output = io.StringIO()
+        with contextlib.redirect_stdout(evo_output):
+            res = differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)], maxiter=self.GENS, popsize=self.POP, polish=polish, disp=True)
+        self.save(res, evo_output, self.savefile)
         return(res)        
         
 
@@ -161,6 +166,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     run_save = False
+    polish = False
     print(args)
     for arg in args:
         if(arg=='run_save:=true'):
@@ -171,9 +177,11 @@ def main(args=None):
         elif('generations:=' in arg):
             global GENERATIONS
             GENERATIONS = int(arg.strip('generations:='))
-        elif('iter:=' in arg):
+        elif('popsize:=' in arg):
             global POP
-            POP = int(arg.strip('iter:='))
+            POP = int(arg.strip('popsize:='))
+        elif(arg=='polish:=True'):
+            polish=True
 
     genetic_algo = GA_Client(SAVEFILE, GENERATIONS, POP)
 
@@ -182,7 +190,7 @@ def main(args=None):
         genetic_algo.run_save()
     else:
         genetic_algo.get_logger().info('Optimising...')
-        genetic_algo.optimize().x    
+        genetic_algo.optimize(polish).x    
 
     genetic_algo.destroy_node()
     rclpy.shutdown()
