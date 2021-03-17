@@ -199,7 +199,7 @@ class GA_Client(Node):
         self.gen = 0 #gen needs to be 0 at start to kickstart the counter and generate the first obstacle
         #differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)])
         with contextlib.redirect_stdout(self.evo_output):
-            res = differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)], maxiter=self.GENS, popsize=self.POP, polish=polish, disp=True)
+            res = differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)], maxiter=self.GENS, popsize=self.POP, polish=polish, disp=True, seed = self.seed)
         self.save(res, self.evo_output, self.savefile)
         return(res)        
         
