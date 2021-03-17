@@ -4,7 +4,8 @@ from math import cos, sin, tan, atan
 LINK_TAG = '<link name="link_name">\nTAGS\n</link>'
 COMP_TAG = '\t<pose> pos_x pos_y 0.15 0 0 rot_z </pose>\n\t<type name="the_name">\n\t\t<geometry>\n\t\t\t<box>\n\t\t\t\t<size>size_x 0.05 0.3</size>\n\t\t\t</box>\n\t\t</geometry>\n\t</type>'
 
-def generate_obstacle(left_wall_y, right_wall_y, length, sections, min_width):
+def generate_obstacle(left_wall_y, right_wall_y, length, sections, min_width, r_seed):
+    seed(r_seed)
     tag = LINK_TAG.replace('TAGS', COMP_TAG.replace('type','visual').replace('the_name','visual') + '\n' + COMP_TAG.replace('type','collision').replace('the_name','collision'))
     section_length = length / sections
     model = '<?xml version="1.0"?>\n<sdf version="1.4">\n<model name="obstacle">\n<pose>1 0 0  0 0 0</pose>\n<static>true</static>'
