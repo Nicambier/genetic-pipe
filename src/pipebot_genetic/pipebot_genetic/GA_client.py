@@ -37,10 +37,10 @@ class GA_Client(Node):
         self.pos = (0,0)
         self.roll = 0
         self.pitch = 0
-        self.target = (5,0) #(10,-6)
+        self.target = (6,0) #(10,-6)
         self.init_dist = hypot(self.pos[0]-self.target[0], self.pos[1]-self.target[1])
         self.time = 0
-        self.maxtime = 20
+        self.maxtime = 30
         self.weights = 25
         self.biases = 7
 
