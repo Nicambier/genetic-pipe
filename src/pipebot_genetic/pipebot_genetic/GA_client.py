@@ -32,7 +32,7 @@ POP = 5
 
 class GA_Client(Node):
 
-    def __init__(self, savefile, gen, runs, seed=0):
+    def __init__(self, savefile, gen, runs, obstacle_mode="CONSTANT", seed=0):
         super().__init__('GA_client')
         self.pos = (0,0)
         self.roll = 0
@@ -48,6 +48,7 @@ class GA_Client(Node):
             self.seed = random.randint(0,65535)
         else:
             self.seed = seed
+        self.obstacle_mode = obstacle_mode
 
         self.GENS = gen
         self.POP = runs
@@ -152,7 +153,11 @@ class GA_Client(Node):
         #time.sleep(0.5)
         spawn_req = SpawnEntity.Request()
         spawn_req.name = 'obstacle_'+str(self.gen)
-        spawn_req.xml = generate_obstacle(0.5,-0.5,3,6,0.4, random.randint(0,65535))
+        seed = self.seed
+        if(self.obstacle_mode=="PER_GEN"):
+            seed = random.randint(0,65535)
+        self.get_logger().info('Generating obstacles with seed '+str(seed))
+        spawn_req.xml = generate_obstacle(0.5,-0.5,3,6,0.4, seed)
         future2 = self.spawn_entity.call_async(spawn_req)
         rclpy.spin_until_future_complete(self, future2)
 
@@ -194,7 +199,7 @@ class GA_Client(Node):
         return fitness
 
     def optimize(self, polish):
-        self.get_logger().info('Optimising with seed'+str(self.seed)+'...')
+        self.get_logger().info('Optimising with seed '+str(self.seed)+'...')
         random.seed(self.seed)
         self.gen = 0 #gen needs to be 0 at start to kickstart the counter and generate the first obstacle
         #differential_evolution(self.launch_instance, [(-1,1) for i in range(self.weights+self.biases)])
@@ -211,6 +216,7 @@ def main(args=None):
 
     run_save = False
     polish = False
+    mode="CONSTANT"
     seed = 0
     for arg in args:
         if(arg=='run_save:=true'):
@@ -228,8 +234,10 @@ def main(args=None):
             seed = int(arg.replace('seed:=',''))
         elif(arg=='polish:=True'):
             polish=True
+        elif('mode:=' in arg):
+            mode = arg.replace('mode:=','')
 
-    genetic_algo = GA_Client(SAVEFILE, GENERATIONS, POP, seed)
+    genetic_algo = GA_Client(SAVEFILE, GENERATIONS, POP, mode, seed)
 
     if(run_save):
         genetic_algo.run_save()
