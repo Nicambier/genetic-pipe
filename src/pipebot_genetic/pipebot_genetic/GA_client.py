@@ -37,12 +37,12 @@ class GA_Client(Node):
         self.pos = (0,0)
         self.roll = 0
         self.pitch = 0
-        self.target = (6,0) #(10,-6)
+        self.target = (5,0) #(10,-6)
         self.init_dist = hypot(self.pos[0]-self.target[0], self.pos[1]-self.target[1])
         self.time = 0
         self.maxtime = 30
-        self.weights = 25
-        self.biases = 7
+        self.weights = 5#25
+        self.biases = 4#7
 
         if(seed==0):
             self.seed = random.randint(0,65535)
@@ -171,10 +171,14 @@ class GA_Client(Node):
         self.pitch = 0
         self.roll = 0
         self.time = 0
-        w = args[:self.weights]
-        #b = [0.0 for i in range(self.biases)]
-        b = args[self.weights:]
-        
+##        w = args[:self.weights]
+##        b = args[self.weights:]
+        w = [0.0 for i in range(25)]
+        w_idx = [3,4,9,16,17]
+        for i in range(self.weights):
+            w[w_idx[i]] = args[i]
+        b = [args[self.weights+idx] for idx in [0,1,0,2,2,3,3]]
+
         self.reset_sim()
         self.init_NN(w,b)
         #time.sleep(0.5)
