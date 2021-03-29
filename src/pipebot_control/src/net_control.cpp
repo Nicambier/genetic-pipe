@@ -83,7 +83,7 @@ void PipebotControl::init(vector<double> weights, vector<double> biases, bool sy
         }
     }
     
-    //RCLCPP_INFO(rclcpp::get_logger("rclcpp"), nn.print());
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), nn.print());
     
     for(unsigned int i=0; i<input+hidden_layer+output; ++i)
         nn.setBias(i,biases[i]);

@@ -11,10 +11,10 @@ double CTRNN::activation(unsigned int i)
 {
     double sum = 0;
     for(unsigned int j=0; j<neurons.size(); ++j) {
-        sum += weights[weight(j,i)] * oldNeurons[j];
+        sum += weights[weight(j,i)] * neurons[j];//oldNeurons[j];
     }
     //return 0.1*(-oldNeurons[i] + sigmoid(bias[i] + sum));
-    return 1*(-oldNeurons[i] + sigmoid(bias[i] + sum));
+    return 1*(-neurons[i] + sigmoid(bias[i] + sum));
 }
 
 vector<double> CTRNN::run(vector<double> input, double deltaT)
