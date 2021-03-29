@@ -100,6 +100,7 @@ class GA_Client(Node):
         self.get_logger().info('Running saved instance...')
         with open(self.savefile, 'rb') as input:
             save = pickle.load(input)
+            self.get_logger().info(str(save.x))
             self.launch_instance(save.x,True)
     
     def odom_callback(self, msg):
@@ -153,11 +154,14 @@ class GA_Client(Node):
         #time.sleep(0.5)
         spawn_req = SpawnEntity.Request()
         spawn_req.name = 'obstacle_'+str(self.gen)
-        seed = self.seed
-        if(self.obstacle_mode=="PER_GEN"):
-            seed = random.randint(0,65535)
-        self.get_logger().info('Generating obstacles with seed '+str(seed))
-        spawn_req.xml = generate_obstacle(0.5,-0.5,3,6,0.4, seed)
+        if(self.obstacle_mode=="NONE"):
+            spawn_req.xml = generate_obstacle(0,0,0,0,0,0)
+        else:
+            seed = self.seed
+            if(self.obstacle_mode=="PER_GEN"):
+                seed = random.randint(0,65535)
+            self.get_logger().info('Generating obstacles with seed '+str(seed))
+            spawn_req.xml = generate_obstacle(0.5,-0.5,3,6,0.4, seed)
         future2 = self.spawn_entity.call_async(spawn_req)
         rclpy.spin_until_future_complete(self, future2)
 
