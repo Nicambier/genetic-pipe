@@ -1,0 +1,68 @@
+BootStrap: library
+From: ubuntu:20.04
+
+%post
+    PACKAGES=/packages
+
+    apt update && apt install locales
+    locale-gen en_US en_US.UTF-8
+    update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    apt-get install software-properties-common -y
+    add-apt-repository universe
+    
+    apt update && apt install curl gnupg2 lsb-release -y
+    curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+    sh -c 'echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list'
+    apt update && apt install -y \
+        build-essential \
+        cmake \
+        git \
+        libbullet-dev \
+        python3-colcon-common-extensions \
+        python3-flake8 \
+        python3-pip \
+        python3-pytest-cov \
+        python3-rosdep \
+        python3-setuptools \
+        python3-vcstool \
+        wget
+    # install some pip packages needed for testing
+    python3 -m pip install -U \
+        argcomplete \
+        flake8-blind-except \
+        flake8-builtins \
+        flake8-class-newline \
+        flake8-comprehensions \
+        flake8-deprecated \
+        flake8-docstrings \
+        flake8-import-order \
+        flake8-quotes \
+        pytest-repeat \
+        pytest-rerunfailures \
+        pytest
+    # install Fast-RTPS dependencies
+    apt install --no-install-recommends -y \
+        libasio-dev \
+        libtinyxml2-dev
+    # install Cyclone DDS dependencies
+    apt install --no-install-recommends -y \
+        libcunit1-dev
+    
+    apt update
+    apt install ros-foxy-ros-base -y
+    
+    mkdir $PACKAGES
+    cd $PACKAGES
+    curl -sSL http://get.gazebosim.org | sh
+    colcon build --symlink-install
+    
+    apt install ros-foxy-gazebo-ros-pkgs -y
+
+%environment
+    export PACKAGES=/packages
+
+%runscript
+
+%labels
+    Author Nicolas Cambier

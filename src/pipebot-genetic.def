@@ -1,0 +1,25 @@
+Bootstrap: localimage
+From: gazebo-ros-foxy.sif
+
+%post -c /bin/bash
+    PACKAGES=/packages
+    cd $PACKAGES
+    apt update && apt install -y python3-scipy
+    pip3 install --no-binary :all: psutil
+    git clone https://github.com/Nicambier/genetic-pipe.git --branch HPC-tests
+    source /opt/ros/foxy/setup.bash
+    rosversion -d
+    colcon build --symlink-install
+
+%environment
+    export PACKAGES=/packages
+    
+%runscript
+    #!/bin/bash
+    cd $PACKAGES 
+    source /opt/ros/foxy/setup.bash 
+    source $PACKAGES/install/setup.bash
+    ros2 launch pipebot_genetic pipebot_GA.launch.py gui:=false "$@"
+
+%labels
+    Author Nicolas Cambier
